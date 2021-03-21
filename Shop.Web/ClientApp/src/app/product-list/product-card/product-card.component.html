@@ -1,0 +1,21 @@
+<div class="card product-card">
+  <img [src]="product.productImage" src="..." alt="" class="card-image-top" />
+
+  <div class="product-info">
+    <div class="product-info-text text-left">
+      <h6 class="card-title">{{ product.productName }}</h6>
+      <p class="cardtext">60 litrow</p>
+    </div>
+    <div class="card-price-row d-flex justify-between">
+      <div class="product-price">
+        <p class="cardtext">{{ product.price | number: "0.2-2" }} zł</p>
+      </div>
+
+      <div class="ml-auto cart-icon">
+        <!-- <a router class="btn-cart-icon">
+                <span><font-awesome-icon icon="cart-plus"/></span
+              ></a> -->
+      </div>
+    </div>
+  </div>
+</div>

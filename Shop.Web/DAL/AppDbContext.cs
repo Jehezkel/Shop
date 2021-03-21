@@ -1,3 +1,5 @@
+using System.Reflection.Metadata;
+using System.Threading;
 using System;
 using System.Security.Cryptography;
 using Shop.Web.Models;
@@ -5,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.Extensions.Options;
 using IdentityServer4.EntityFramework.Options;
+using System.Threading.Tasks;
 
 namespace Shop.Web.DAL
 {
@@ -30,5 +33,22 @@ namespace Shop.Web.DAL
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<ProductDescription> ProductDescriptions { get; set; }
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        {
+            foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<BaseEntity> entry in ChangeTracker.Entries<BaseEntity>())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.Entity.CreatedDate = DateTime.Now;
+                        break;
+                    case EntityState.Modified:
+                        entry.Entity.ModifiedDate = DateTime.Now;
+                        break;
+                }
+            }
+            var result = await base.SaveChangesAsync(cancellationToken);
+            return result;
+        }
     }
 }

@@ -14,7 +14,7 @@ namespace Shop.Web.Products.Queries.GetProducts
         public string ProductImage { get; set; }
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<Product, ProductDTO>().ForMember(d => d.ProductImage, opt => opt.MapFrom(s => s.ProductImages.FirstOrDefault().fullFilePath));
+            profile.CreateMap<Product, ProductDTO>().ForMember(d => d.ProductImage, opt => opt.MapFrom(s => s.ProductImages.OrderBy(i => i.ImageOrder).FirstOrDefault().fullFilePath));
         }
     }
     public class ProductListDTO

@@ -4,7 +4,14 @@ namespace Shop.Web.Models
     {
         public int ProductImageId { get; set; }
         public string ImageName { get; set; }
-        public bool IsMainImage { get; set; }
+        public int ImageOrder { get; set; }
+        public bool IsMainImage
+        {
+            get
+            {
+                return ImageOrder == 0;
+            }
+        }
         public int? ProductId { get; set; }
         public string fullFilePath
         {

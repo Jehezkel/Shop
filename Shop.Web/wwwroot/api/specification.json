@@ -168,6 +168,10 @@
                 "type": "string",
                 "nullable": true
               },
+              "imageOrder": {
+                "type": "integer",
+                "format": "int32"
+              },
               "isMainImage": {
                 "type": "boolean"
               },
@@ -268,7 +272,8 @@
         "properties": {
           "createdDate": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           },
           "modifiedDate": {
             "type": "string",
@@ -343,21 +348,8 @@
             "type": "array",
             "nullable": true,
             "items": {
-              "$ref": "#/components/schemas/AddedImageDTO"
+              "$ref": "#/components/schemas/ProductImage"
             }
-          }
-        }
-      },
-      "AddedImageDTO": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "productImageId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "isMainImage": {
-            "type": "boolean"
           }
         }
       },

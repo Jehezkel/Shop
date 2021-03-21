@@ -1,0 +1,11 @@
+<h1>Product List</h1>
+<p *ngIf="!pListVm"><em>Loading...</em></p>
+<div *ngIf="pListVm">
+  <div id="productlist" class="row row-cols-lg-5 row-cols-xs-1">
+    <app-product-card
+      *ngFor="let product of pListVm.products"
+      [product]="product"
+      class="mb-4 mr-4"
+    ></app-product-card>
+  </div>
+</div>

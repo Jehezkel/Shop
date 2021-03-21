@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 
 namespace Shop.Web.Products.Commands.CreateProduct
 {
-    public class AddedImageDTO
-    {
-        public int ProductImageId { get; set; }
-        public bool IsMainImage { get; set; }
-    }
+    // public class AddedImageDTO
+    // {
+    //     public int ProductImageId { get; set; }
+    //     public bool IsMainImage { get; set; }
+    // }
     public class CreateProductCommand : IRequest<int>
     {
         public string ProductName { get; set; }
         public decimal Price { get; set; }
         public string ProductDescription { get; set; }
-        public List<AddedImageDTO> Images { get; set; }
+        public List<ProductImage> Images { get; set; } = new List<ProductImage>();
     }
     public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, int>
     {
@@ -35,10 +35,11 @@ namespace Shop.Web.Products.Commands.CreateProduct
                 ProductName = request.ProductName,
                 Price = request.Price
             };
+            // product.ProductImages = request.Images;
             request.Images.ForEach(i =>
            {
                var currImage = _context.ProductImages.Find(i.ProductImageId);
-               currImage.IsMainImage = i.IsMainImage;
+               currImage.ImageOrder = i.ImageOrder;
                product.ProductImages.Add(currImage);
            });
             product.ProductDescription = new ProductDescription

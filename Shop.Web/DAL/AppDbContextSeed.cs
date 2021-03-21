@@ -9,7 +9,7 @@ namespace Shop.Web.DAL
     {
         public static async Task SeedSampleProductsAsync(AppDbContext context)
         {
-            if (false)
+            if (!context.Products.Any())
             {
                 context.Products.Add(new Product
                 {

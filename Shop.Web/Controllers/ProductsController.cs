@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Shop.Web.Controllers
 {
-    [Authorize]
+    // [Authorize]
     public class ProductsController : ApiControllerBase
     {
         [HttpGet]
