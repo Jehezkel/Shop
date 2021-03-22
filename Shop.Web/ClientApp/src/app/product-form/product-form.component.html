@@ -33,13 +33,13 @@
         <svg
           *ngIf="product.images.length == 0"
           xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 156px 130px"
         >
           <rect width="156px" height="130px" fill="#cccccc"></rect>
         </svg>
       </div>
     </div>
   </div>
+  <quill-editor [(ngModel)]="product.productDescription"></quill-editor>
 
   <div class="d-flex justify-content-center mt-3">
     <button class="btn-success btn" (click)="saveForm()">Save</button>

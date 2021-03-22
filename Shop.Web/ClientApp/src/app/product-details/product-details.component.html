@@ -1,0 +1,45 @@
+<div class="row">
+  <div class="gallery col-md-6 row justify-content-center">
+    <div class="main-img m-2">
+      <img class="main h-100" [src]="_enlargedPath" alt="" />
+    </div>
+    <div class="row justify-content-center">
+      <div
+        class="col-2 column img-tile ml-2"
+        *ngFor="let image of product.productImages"
+      >
+        <img
+          class="miniature"
+          [src]="image.fullFilePath"
+          [id]="image.productImageId"
+          (mouseover)="setEnlargedImage($event)"
+        />
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 price-title">
+    <div class="title">
+      <h3>{{ product.productName }}</h3>
+      <div class="row">
+        <div class="col">
+          <p>kod produktu:{{ product.productId }}</p>
+        </div>
+        <div class="col"><p>miejsce na oceny</p></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="short-spec col-md-6">
+        <p>skrocona specyfikacja</p>
+      </div>
+      <div class="price-card card col-md-6 p-3">
+        <h6 class="card-title align-self-center">
+          {{ product.price | number: "0.2" }} zł
+        </h6>
+        <a href="" class="btn btn-success round w-75 align-self-center"
+          >dodaj do koszyka</a
+        >
+      </div>
+    </div>
+  </div>
+</div>
+<div class="product-description" [innerHTML]="product.productDescription"></div>

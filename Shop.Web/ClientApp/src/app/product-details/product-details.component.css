@@ -1,0 +1,10 @@
+.gallery img.main {
+  max-height: 350px;
+}
+img.miniature {
+  width: 100%;
+}
+.img-tile {
+  border: solid 1px black;
+  border-radius: 5%;
+}
