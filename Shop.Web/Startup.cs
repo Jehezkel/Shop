@@ -43,6 +43,12 @@ namespace Shop.Web
                 .AddApiAuthorization<AppUser, AppDbContext>();
 
             services.AddAuthentication()
+                .AddGoogle(opt =>
+                {
+                    IConfigurationSection googleAuthNSection = Configuration.GetSection("Authentication:Google");
+                    opt.ClientId = googleAuthNSection["ClientId"];
+                    opt.ClientSecret = googleAuthNSection["ClientSecret"];
+                })
                 .AddIdentityServerJwt();
             services.AddControllersWithViews();
             services.AddRazorPages();
