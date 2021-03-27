@@ -26,13 +26,23 @@ namespace Shop.Web.Accounts.Commands
         }
         public async Task<string> Handle(LogInCommand request, CancellationToken cancellation)
         {
-            var user = _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            if(user==null){
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (user == null)
+            {
                 return "not registred";
-            }else{
-                
             }
-            return "xd";
+            else
+            {
+                var pwdCheckResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+                if (pwdCheckResult == SignInResult.Success)
+                {
+                    return "Success";
+                }
+                else
+                {
+                    return "Incorrect password";
+                }
+            }
         }
     }
 }

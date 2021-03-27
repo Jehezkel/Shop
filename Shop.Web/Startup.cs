@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Shop.Web.DAL;
 using MediatR;
 using System.Reflection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Shop.Web
 {
@@ -39,16 +40,20 @@ namespace Shop.Web
             services.AddDefaultIdentity<AppUser>()
                 .AddEntityFrameworkStores<AppDbContext>();
 
-            services.AddIdentityServer()
-                .AddApiAuthorization<AppUser, AppDbContext>();
+            // services.AddIdentityServer()
+            //     .AddApiAuthorization<AppUser, AppDbContext>();
 
-            services.AddAuthentication()
-                .AddGoogle(opt =>
-                {
-                    IConfigurationSection googleAuthNSection = Configuration.GetSection("Authentication:Google");
-                    opt.ClientId = googleAuthNSection["ClientId"];
-                    opt.ClientSecret = googleAuthNSection["ClientSecret"];
-                })
+            services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                // .AddGoogle(opt =>
+                // {
+                //     IConfigurationSection googleAuthNSection = Configuration.GetSection("Authentication:Google");
+                //     opt.ClientId = googleAuthNSection["ClientId"];
+                //     opt.ClientSecret = googleAuthNSection["ClientSecret"];
+                // })
                 .AddIdentityServerJwt();
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -93,7 +98,7 @@ namespace Shop.Web
                     settings.Path = "/api";
                 });
             app.UseAuthentication();
-            app.UseIdentityServer();
+            // app.UseIdentityServer();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
