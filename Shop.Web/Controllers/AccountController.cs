@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ namespace Shop.Web.Controllers
     public class AccountController : ApiControllerBase
     {
         [HttpPost]
-        public async Task<ActionResult<string>> Login([FromBody] LogInCommand logInCommand)
+        public async Task<ActionResult<JwtSecurityToken>> Login([FromBody] LogInCommand logInCommand)
         {
             return await Mediator.Send(logInCommand);
         }

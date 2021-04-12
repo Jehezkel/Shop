@@ -15,7 +15,7 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IAccountClient {
-    login(logInCommand: LogInCommand): Observable<string>;
+    login(logInCommand: LogInCommand): Observable<JwtSecurityToken>;
     register(registerCommand: RegisterCommand): Observable<RegisterResult>;
 }
 
@@ -32,7 +32,7 @@ export class AccountClient implements IAccountClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    login(logInCommand: LogInCommand): Observable<string> {
+    login(logInCommand: LogInCommand): Observable<JwtSecurityToken> {
         let url_ = this.baseUrl + "/api/Account";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -55,14 +55,14 @@ export class AccountClient implements IAccountClient {
                 try {
                     return this.processLogin(<any>response_);
                 } catch (e) {
-                    return <Observable<string>><any>_observableThrow(e);
+                    return <Observable<JwtSecurityToken>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<string>><any>_observableThrow(response_);
+                return <Observable<JwtSecurityToken>><any>_observableThrow(response_);
         }));
     }
 
-    protected processLogin(response: HttpResponseBase): Observable<string> {
+    protected processLogin(response: HttpResponseBase): Observable<JwtSecurityToken> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -73,7 +73,7 @@ export class AccountClient implements IAccountClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            result200 = JwtSecurityToken.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -81,7 +81,7 @@ export class AccountClient implements IAccountClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<string>(<any>null);
+        return _observableOf<JwtSecurityToken>(<any>null);
     }
 
     register(registerCommand: RegisterCommand): Observable<RegisterResult> {
@@ -447,6 +447,800 @@ export class WeatherForecastClient implements IWeatherForecastClient {
         }
         return _observableOf<WeatherForecast[]>(<any>null);
     }
+}
+
+export abstract class SecurityToken implements ISecurityToken {
+
+    constructor(data?: ISecurityToken) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): SecurityToken {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'SecurityToken' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data; 
+    }
+}
+
+export interface ISecurityToken {
+}
+
+export class JwtSecurityToken extends SecurityToken implements IJwtSecurityToken {
+    actor?: string | undefined;
+    audiences?: string[] | undefined;
+    claims?: Claim[] | undefined;
+    encodedHeader?: string | undefined;
+    encodedPayload?: string | undefined;
+    header?: JwtHeader | undefined;
+    id?: string | undefined;
+    issuer?: string | undefined;
+    payload?: JwtPayload | undefined;
+    innerToken?: JwtSecurityToken | undefined;
+    rawAuthenticationTag?: string | undefined;
+    rawCiphertext?: string | undefined;
+    rawData?: string | undefined;
+    rawEncryptedKey?: string | undefined;
+    rawInitializationVector?: string | undefined;
+    rawHeader?: string | undefined;
+    rawPayload?: string | undefined;
+    rawSignature?: string | undefined;
+    securityKey?: SecurityKey | undefined;
+    signatureAlgorithm?: string | undefined;
+    signingCredentials?: SigningCredentials | undefined;
+    encryptingCredentials?: EncryptingCredentials | undefined;
+    signingKey?: SecurityKey | undefined;
+    subject?: string | undefined;
+    validFrom?: Date;
+    validTo?: Date;
+    issuedAt?: Date;
+
+    constructor(data?: IJwtSecurityToken) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.actor = _data["actor"];
+            if (Array.isArray(_data["audiences"])) {
+                this.audiences = [] as any;
+                for (let item of _data["audiences"])
+                    this.audiences!.push(item);
+            }
+            if (Array.isArray(_data["claims"])) {
+                this.claims = [] as any;
+                for (let item of _data["claims"])
+                    this.claims!.push(Claim.fromJS(item));
+            }
+            this.encodedHeader = _data["encodedHeader"];
+            this.encodedPayload = _data["encodedPayload"];
+            this.header = _data["header"] ? JwtHeader.fromJS(_data["header"]) : <any>undefined;
+            this.id = _data["id"];
+            this.issuer = _data["issuer"];
+            this.payload = _data["payload"] ? JwtPayload.fromJS(_data["payload"]) : <any>undefined;
+            this.innerToken = _data["innerToken"] ? JwtSecurityToken.fromJS(_data["innerToken"]) : <any>undefined;
+            this.rawAuthenticationTag = _data["rawAuthenticationTag"];
+            this.rawCiphertext = _data["rawCiphertext"];
+            this.rawData = _data["rawData"];
+            this.rawEncryptedKey = _data["rawEncryptedKey"];
+            this.rawInitializationVector = _data["rawInitializationVector"];
+            this.rawHeader = _data["rawHeader"];
+            this.rawPayload = _data["rawPayload"];
+            this.rawSignature = _data["rawSignature"];
+            this.securityKey = _data["securityKey"] ? SecurityKey.fromJS(_data["securityKey"]) : <any>undefined;
+            this.signatureAlgorithm = _data["signatureAlgorithm"];
+            this.signingCredentials = _data["signingCredentials"] ? SigningCredentials.fromJS(_data["signingCredentials"]) : <any>undefined;
+            this.encryptingCredentials = _data["encryptingCredentials"] ? EncryptingCredentials.fromJS(_data["encryptingCredentials"]) : <any>undefined;
+            this.signingKey = _data["signingKey"] ? SecurityKey.fromJS(_data["signingKey"]) : <any>undefined;
+            this.subject = _data["subject"];
+            this.validFrom = _data["validFrom"] ? new Date(_data["validFrom"].toString()) : <any>undefined;
+            this.validTo = _data["validTo"] ? new Date(_data["validTo"].toString()) : <any>undefined;
+            this.issuedAt = _data["issuedAt"] ? new Date(_data["issuedAt"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): JwtSecurityToken {
+        data = typeof data === 'object' ? data : {};
+        let result = new JwtSecurityToken();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["actor"] = this.actor;
+        if (Array.isArray(this.audiences)) {
+            data["audiences"] = [];
+            for (let item of this.audiences)
+                data["audiences"].push(item);
+        }
+        if (Array.isArray(this.claims)) {
+            data["claims"] = [];
+            for (let item of this.claims)
+                data["claims"].push(item.toJSON());
+        }
+        data["encodedHeader"] = this.encodedHeader;
+        data["encodedPayload"] = this.encodedPayload;
+        data["header"] = this.header ? this.header.toJSON() : <any>undefined;
+        data["id"] = this.id;
+        data["issuer"] = this.issuer;
+        data["payload"] = this.payload ? this.payload.toJSON() : <any>undefined;
+        data["innerToken"] = this.innerToken ? this.innerToken.toJSON() : <any>undefined;
+        data["rawAuthenticationTag"] = this.rawAuthenticationTag;
+        data["rawCiphertext"] = this.rawCiphertext;
+        data["rawData"] = this.rawData;
+        data["rawEncryptedKey"] = this.rawEncryptedKey;
+        data["rawInitializationVector"] = this.rawInitializationVector;
+        data["rawHeader"] = this.rawHeader;
+        data["rawPayload"] = this.rawPayload;
+        data["rawSignature"] = this.rawSignature;
+        data["securityKey"] = this.securityKey ? this.securityKey.toJSON() : <any>undefined;
+        data["signatureAlgorithm"] = this.signatureAlgorithm;
+        data["signingCredentials"] = this.signingCredentials ? this.signingCredentials.toJSON() : <any>undefined;
+        data["encryptingCredentials"] = this.encryptingCredentials ? this.encryptingCredentials.toJSON() : <any>undefined;
+        data["signingKey"] = this.signingKey ? this.signingKey.toJSON() : <any>undefined;
+        data["subject"] = this.subject;
+        data["validFrom"] = this.validFrom ? this.validFrom.toISOString() : <any>undefined;
+        data["validTo"] = this.validTo ? this.validTo.toISOString() : <any>undefined;
+        data["issuedAt"] = this.issuedAt ? this.issuedAt.toISOString() : <any>undefined;
+        super.toJSON(data);
+        return data; 
+    }
+}
+
+export interface IJwtSecurityToken extends ISecurityToken {
+    actor?: string | undefined;
+    audiences?: string[] | undefined;
+    claims?: Claim[] | undefined;
+    encodedHeader?: string | undefined;
+    encodedPayload?: string | undefined;
+    header?: JwtHeader | undefined;
+    id?: string | undefined;
+    issuer?: string | undefined;
+    payload?: JwtPayload | undefined;
+    innerToken?: JwtSecurityToken | undefined;
+    rawAuthenticationTag?: string | undefined;
+    rawCiphertext?: string | undefined;
+    rawData?: string | undefined;
+    rawEncryptedKey?: string | undefined;
+    rawInitializationVector?: string | undefined;
+    rawHeader?: string | undefined;
+    rawPayload?: string | undefined;
+    rawSignature?: string | undefined;
+    securityKey?: SecurityKey | undefined;
+    signatureAlgorithm?: string | undefined;
+    signingCredentials?: SigningCredentials | undefined;
+    encryptingCredentials?: EncryptingCredentials | undefined;
+    signingKey?: SecurityKey | undefined;
+    subject?: string | undefined;
+    validFrom?: Date;
+    validTo?: Date;
+    issuedAt?: Date;
+}
+
+export class Claim implements IClaim {
+    issuer?: string;
+    originalIssuer?: string;
+    properties?: { [key: string]: string; };
+    subject?: ClaimsIdentity | undefined;
+    type?: string;
+    value?: string;
+    valueType?: string;
+
+    constructor(data?: IClaim) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.issuer = _data["issuer"];
+            this.originalIssuer = _data["originalIssuer"];
+            if (_data["properties"]) {
+                this.properties = {} as any;
+                for (let key in _data["properties"]) {
+                    if (_data["properties"].hasOwnProperty(key))
+                        this.properties![key] = _data["properties"][key];
+                }
+            }
+            this.subject = _data["subject"] ? ClaimsIdentity.fromJS(_data["subject"]) : <any>undefined;
+            this.type = _data["type"];
+            this.value = _data["value"];
+            this.valueType = _data["valueType"];
+        }
+    }
+
+    static fromJS(data: any): Claim {
+        data = typeof data === 'object' ? data : {};
+        let result = new Claim();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["issuer"] = this.issuer;
+        data["originalIssuer"] = this.originalIssuer;
+        if (this.properties) {
+            data["properties"] = {};
+            for (let key in this.properties) {
+                if (this.properties.hasOwnProperty(key))
+                    data["properties"][key] = this.properties[key];
+            }
+        }
+        data["subject"] = this.subject ? this.subject.toJSON() : <any>undefined;
+        data["type"] = this.type;
+        data["value"] = this.value;
+        data["valueType"] = this.valueType;
+        return data; 
+    }
+}
+
+export interface IClaim {
+    issuer?: string;
+    originalIssuer?: string;
+    properties?: { [key: string]: string; };
+    subject?: ClaimsIdentity | undefined;
+    type?: string;
+    value?: string;
+    valueType?: string;
+}
+
+export class ClaimsIdentity implements IClaimsIdentity {
+    authenticationType?: string | undefined;
+    isAuthenticated?: boolean;
+    actor?: ClaimsIdentity | undefined;
+    bootstrapContext?: any | undefined;
+    claims?: Claim[];
+    label?: string | undefined;
+    name?: string | undefined;
+    nameClaimType?: string;
+    roleClaimType?: string;
+
+    constructor(data?: IClaimsIdentity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.authenticationType = _data["authenticationType"];
+            this.isAuthenticated = _data["isAuthenticated"];
+            this.actor = _data["actor"] ? ClaimsIdentity.fromJS(_data["actor"]) : <any>undefined;
+            this.bootstrapContext = _data["bootstrapContext"];
+            if (Array.isArray(_data["claims"])) {
+                this.claims = [] as any;
+                for (let item of _data["claims"])
+                    this.claims!.push(Claim.fromJS(item));
+            }
+            this.label = _data["label"];
+            this.name = _data["name"];
+            this.nameClaimType = _data["nameClaimType"];
+            this.roleClaimType = _data["roleClaimType"];
+        }
+    }
+
+    static fromJS(data: any): ClaimsIdentity {
+        data = typeof data === 'object' ? data : {};
+        let result = new ClaimsIdentity();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["authenticationType"] = this.authenticationType;
+        data["isAuthenticated"] = this.isAuthenticated;
+        data["actor"] = this.actor ? this.actor.toJSON() : <any>undefined;
+        data["bootstrapContext"] = this.bootstrapContext;
+        if (Array.isArray(this.claims)) {
+            data["claims"] = [];
+            for (let item of this.claims)
+                data["claims"].push(item.toJSON());
+        }
+        data["label"] = this.label;
+        data["name"] = this.name;
+        data["nameClaimType"] = this.nameClaimType;
+        data["roleClaimType"] = this.roleClaimType;
+        return data; 
+    }
+}
+
+export interface IClaimsIdentity {
+    authenticationType?: string | undefined;
+    isAuthenticated?: boolean;
+    actor?: ClaimsIdentity | undefined;
+    bootstrapContext?: any | undefined;
+    claims?: Claim[];
+    label?: string | undefined;
+    name?: string | undefined;
+    nameClaimType?: string;
+    roleClaimType?: string;
+}
+
+export class JwtHeader implements IJwtHeader {
+    alg?: string | undefined;
+    cty?: string | undefined;
+    enc?: string | undefined;
+    encryptingCredentials?: EncryptingCredentials | undefined;
+    iV?: string | undefined;
+    kid?: string | undefined;
+    signingCredentials?: SigningCredentials | undefined;
+    typ?: string | undefined;
+    x5t?: string | undefined;
+    zip?: string | undefined;
+
+    [key: string]: any; 
+
+    constructor(data?: IJwtHeader) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.alg = _data["Alg"];
+            this.cty = _data["Cty"];
+            this.enc = _data["Enc"];
+            this.encryptingCredentials = _data["EncryptingCredentials"] ? EncryptingCredentials.fromJS(_data["EncryptingCredentials"]) : <any>undefined;
+            this.iV = _data["IV"];
+            this.kid = _data["Kid"];
+            this.signingCredentials = _data["SigningCredentials"] ? SigningCredentials.fromJS(_data["SigningCredentials"]) : <any>undefined;
+            this.typ = _data["Typ"];
+            this.x5t = _data["X5t"];
+            this.zip = _data["Zip"];
+        }
+    }
+
+    static fromJS(data: any): JwtHeader {
+        data = typeof data === 'object' ? data : {};
+        let result = new JwtHeader();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["Alg"] = this.alg;
+        data["Cty"] = this.cty;
+        data["Enc"] = this.enc;
+        data["EncryptingCredentials"] = this.encryptingCredentials ? this.encryptingCredentials.toJSON() : <any>undefined;
+        data["IV"] = this.iV;
+        data["Kid"] = this.kid;
+        data["SigningCredentials"] = this.signingCredentials ? this.signingCredentials.toJSON() : <any>undefined;
+        data["Typ"] = this.typ;
+        data["X5t"] = this.x5t;
+        data["Zip"] = this.zip;
+        return data; 
+    }
+}
+
+export interface IJwtHeader {
+    alg?: string | undefined;
+    cty?: string | undefined;
+    enc?: string | undefined;
+    encryptingCredentials?: EncryptingCredentials | undefined;
+    iV?: string | undefined;
+    kid?: string | undefined;
+    signingCredentials?: SigningCredentials | undefined;
+    typ?: string | undefined;
+    x5t?: string | undefined;
+    zip?: string | undefined;
+
+    [key: string]: any; 
+}
+
+export class EncryptingCredentials implements IEncryptingCredentials {
+    alg?: string | undefined;
+    enc?: string | undefined;
+    cryptoProviderFactory?: CryptoProviderFactory | undefined;
+    key?: SecurityKey | undefined;
+
+    constructor(data?: IEncryptingCredentials) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.alg = _data["alg"];
+            this.enc = _data["enc"];
+            this.cryptoProviderFactory = _data["cryptoProviderFactory"] ? CryptoProviderFactory.fromJS(_data["cryptoProviderFactory"]) : <any>undefined;
+            this.key = _data["key"] ? SecurityKey.fromJS(_data["key"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): EncryptingCredentials {
+        data = typeof data === 'object' ? data : {};
+        let result = new EncryptingCredentials();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["alg"] = this.alg;
+        data["enc"] = this.enc;
+        data["cryptoProviderFactory"] = this.cryptoProviderFactory ? this.cryptoProviderFactory.toJSON() : <any>undefined;
+        data["key"] = this.key ? this.key.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IEncryptingCredentials {
+    alg?: string | undefined;
+    enc?: string | undefined;
+    cryptoProviderFactory?: CryptoProviderFactory | undefined;
+    key?: SecurityKey | undefined;
+}
+
+export class CryptoProviderFactory implements ICryptoProviderFactory {
+    cryptoProviderCache?: CryptoProviderCache | undefined;
+    customCryptoProvider?: ICryptoProvider | undefined;
+    cacheSignatureProviders?: boolean;
+
+    constructor(data?: ICryptoProviderFactory) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.cacheSignatureProviders = true;
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.cryptoProviderCache = _data["cryptoProviderCache"] ? CryptoProviderCache.fromJS(_data["cryptoProviderCache"]) : <any>undefined;
+            this.customCryptoProvider = _data["customCryptoProvider"] ? ICryptoProvider.fromJS(_data["customCryptoProvider"]) : <any>undefined;
+            this.cacheSignatureProviders = _data["cacheSignatureProviders"] !== undefined ? _data["cacheSignatureProviders"] : true;
+        }
+    }
+
+    static fromJS(data: any): CryptoProviderFactory {
+        data = typeof data === 'object' ? data : {};
+        let result = new CryptoProviderFactory();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["cryptoProviderCache"] = this.cryptoProviderCache ? this.cryptoProviderCache.toJSON() : <any>undefined;
+        data["customCryptoProvider"] = this.customCryptoProvider ? this.customCryptoProvider.toJSON() : <any>undefined;
+        data["cacheSignatureProviders"] = this.cacheSignatureProviders;
+        return data; 
+    }
+}
+
+export interface ICryptoProviderFactory {
+    cryptoProviderCache?: CryptoProviderCache | undefined;
+    customCryptoProvider?: ICryptoProvider | undefined;
+    cacheSignatureProviders?: boolean;
+}
+
+export abstract class CryptoProviderCache implements ICryptoProviderCache {
+
+    constructor(data?: ICryptoProviderCache) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): CryptoProviderCache {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'CryptoProviderCache' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data; 
+    }
+}
+
+export interface ICryptoProviderCache {
+}
+
+export abstract class ICryptoProvider implements IICryptoProvider {
+
+    constructor(data?: IICryptoProvider) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): ICryptoProvider {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'ICryptoProvider' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data; 
+    }
+}
+
+export interface IICryptoProvider {
+}
+
+export abstract class SecurityKey implements ISecurityKey {
+    keyId?: string | undefined;
+    cryptoProviderFactory?: CryptoProviderFactory | undefined;
+
+    constructor(data?: ISecurityKey) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.keyId = _data["keyId"];
+            this.cryptoProviderFactory = _data["cryptoProviderFactory"] ? CryptoProviderFactory.fromJS(_data["cryptoProviderFactory"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): SecurityKey {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'SecurityKey' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["keyId"] = this.keyId;
+        data["cryptoProviderFactory"] = this.cryptoProviderFactory ? this.cryptoProviderFactory.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface ISecurityKey {
+    keyId?: string | undefined;
+    cryptoProviderFactory?: CryptoProviderFactory | undefined;
+}
+
+export class SigningCredentials implements ISigningCredentials {
+    algorithm?: string | undefined;
+    digest?: string | undefined;
+    cryptoProviderFactory?: CryptoProviderFactory | undefined;
+    key?: SecurityKey | undefined;
+    kid?: string | undefined;
+
+    constructor(data?: ISigningCredentials) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.algorithm = _data["algorithm"];
+            this.digest = _data["digest"];
+            this.cryptoProviderFactory = _data["cryptoProviderFactory"] ? CryptoProviderFactory.fromJS(_data["cryptoProviderFactory"]) : <any>undefined;
+            this.key = _data["key"] ? SecurityKey.fromJS(_data["key"]) : <any>undefined;
+            this.kid = _data["kid"];
+        }
+    }
+
+    static fromJS(data: any): SigningCredentials {
+        data = typeof data === 'object' ? data : {};
+        let result = new SigningCredentials();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["algorithm"] = this.algorithm;
+        data["digest"] = this.digest;
+        data["cryptoProviderFactory"] = this.cryptoProviderFactory ? this.cryptoProviderFactory.toJSON() : <any>undefined;
+        data["key"] = this.key ? this.key.toJSON() : <any>undefined;
+        data["kid"] = this.kid;
+        return data; 
+    }
+}
+
+export interface ISigningCredentials {
+    algorithm?: string | undefined;
+    digest?: string | undefined;
+    cryptoProviderFactory?: CryptoProviderFactory | undefined;
+    key?: SecurityKey | undefined;
+    kid?: string | undefined;
+}
+
+export class JwtPayload implements IJwtPayload {
+    actort?: string | undefined;
+    acr?: string | undefined;
+    amr?: string[] | undefined;
+    authTime?: number | undefined;
+    aud?: string[] | undefined;
+    azp?: string | undefined;
+    cHash?: string | undefined;
+    exp?: number | undefined;
+    jti?: string | undefined;
+    iat?: number | undefined;
+    iss?: string | undefined;
+    nbf?: number | undefined;
+    nonce?: string | undefined;
+    sub?: string | undefined;
+    validFrom?: Date;
+    validTo?: Date;
+    issuedAt?: Date;
+    claims?: Claim[] | undefined;
+
+    [key: string]: any; 
+
+    constructor(data?: IJwtPayload) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.actort = _data["Actort"];
+            this.acr = _data["Acr"];
+            if (Array.isArray(_data["Amr"])) {
+                this.amr = [] as any;
+                for (let item of _data["Amr"])
+                    this.amr!.push(item);
+            }
+            this.authTime = _data["AuthTime"];
+            if (Array.isArray(_data["Aud"])) {
+                this.aud = [] as any;
+                for (let item of _data["Aud"])
+                    this.aud!.push(item);
+            }
+            this.azp = _data["Azp"];
+            this.cHash = _data["CHash"];
+            this.exp = _data["Exp"];
+            this.jti = _data["Jti"];
+            this.iat = _data["Iat"];
+            this.iss = _data["Iss"];
+            this.nbf = _data["Nbf"];
+            this.nonce = _data["Nonce"];
+            this.sub = _data["Sub"];
+            this.validFrom = _data["ValidFrom"] ? new Date(_data["ValidFrom"].toString()) : <any>undefined;
+            this.validTo = _data["ValidTo"] ? new Date(_data["ValidTo"].toString()) : <any>undefined;
+            this.issuedAt = _data["IssuedAt"] ? new Date(_data["IssuedAt"].toString()) : <any>undefined;
+            if (Array.isArray(_data["Claims"])) {
+                this.claims = [] as any;
+                for (let item of _data["Claims"])
+                    this.claims!.push(Claim.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): JwtPayload {
+        data = typeof data === 'object' ? data : {};
+        let result = new JwtPayload();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["Actort"] = this.actort;
+        data["Acr"] = this.acr;
+        if (Array.isArray(this.amr)) {
+            data["Amr"] = [];
+            for (let item of this.amr)
+                data["Amr"].push(item);
+        }
+        data["AuthTime"] = this.authTime;
+        if (Array.isArray(this.aud)) {
+            data["Aud"] = [];
+            for (let item of this.aud)
+                data["Aud"].push(item);
+        }
+        data["Azp"] = this.azp;
+        data["CHash"] = this.cHash;
+        data["Exp"] = this.exp;
+        data["Jti"] = this.jti;
+        data["Iat"] = this.iat;
+        data["Iss"] = this.iss;
+        data["Nbf"] = this.nbf;
+        data["Nonce"] = this.nonce;
+        data["Sub"] = this.sub;
+        data["ValidFrom"] = this.validFrom ? this.validFrom.toISOString() : <any>undefined;
+        data["ValidTo"] = this.validTo ? this.validTo.toISOString() : <any>undefined;
+        data["IssuedAt"] = this.issuedAt ? this.issuedAt.toISOString() : <any>undefined;
+        if (Array.isArray(this.claims)) {
+            data["Claims"] = [];
+            for (let item of this.claims)
+                data["Claims"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IJwtPayload {
+    actort?: string | undefined;
+    acr?: string | undefined;
+    amr?: string[] | undefined;
+    authTime?: number | undefined;
+    aud?: string[] | undefined;
+    azp?: string | undefined;
+    cHash?: string | undefined;
+    exp?: number | undefined;
+    jti?: string | undefined;
+    iat?: number | undefined;
+    iss?: string | undefined;
+    nbf?: number | undefined;
+    nonce?: string | undefined;
+    sub?: string | undefined;
+    validFrom?: Date;
+    validTo?: Date;
+    issuedAt?: Date;
+    claims?: Claim[] | undefined;
+
+    [key: string]: any; 
 }
 
 export class LogInCommand implements ILogInCommand {
