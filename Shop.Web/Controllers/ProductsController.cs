@@ -11,7 +11,6 @@ namespace Shop.Web.Controllers
     public class ProductsController : ApiControllerBase
     {
         [HttpGet]
-        [AllowAnonymous]
         public async Task<ActionResult<ProductListDTO>> GetProducts()
         {
             return await Mediator.Send(new GetProductsQuery());

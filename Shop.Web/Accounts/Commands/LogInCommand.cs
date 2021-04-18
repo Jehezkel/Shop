@@ -12,12 +12,17 @@ using Microsoft.Extensions.Configuration;
 
 namespace Shop.Web.Accounts.Commands
 {
-    public class LogInCommand : IRequest<JwtSecurityToken>
+    public class LogInCommand : IRequest<LogInResponse>
     {
         public string Email { get; set; }
         public string Password { get; set; }
     }
-    public class LogInCommandHandler : IRequestHandler<LogInCommand, JwtSecurityToken>
+    public class LogInResponse
+    {
+        public AppUser User { get; set; }
+        public string Token { get; set; }
+    }
+    public class LogInCommandHandler : IRequestHandler<LogInCommand, LogInResponse>
     {
         private AppDbContext _context;
         private readonly UserManager<AppUser> _userManager;
@@ -30,7 +35,7 @@ namespace Shop.Web.Accounts.Commands
             _userManager = userManager;
             _configuration = configuration;
         }
-        public async Task<JwtSecurityToken> Handle(LogInCommand request, CancellationToken cancellation)
+        public async Task<LogInResponse> Handle(LogInCommand request, CancellationToken cancellation)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
             if (user == null)
@@ -43,7 +48,11 @@ namespace Shop.Web.Accounts.Commands
                 var acc_service = new AccountsService(_configuration);
                 if (pwdCheckResult == SignInResult.Success)
                 {
-                    return acc_service.CreateJwtToken(user.Id);
+                    return new LogInResponse
+                    {
+                        User = user,
+                        Token = new JwtSecurityTokenHandler().WriteToken(acc_service.CreateJwtToken(user.Id))
+                    };
                 }
                 else
                 {

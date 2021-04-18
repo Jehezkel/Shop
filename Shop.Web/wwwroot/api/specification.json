@@ -30,7 +30,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/JwtSecurityToken"
+                  "$ref": "#/components/schemas/LogInResponse"
                 }
               }
             }
@@ -215,524 +215,118 @@
   },
   "components": {
     "schemas": {
-      "JwtSecurityToken": {
+      "LogInResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AppUser"
+              }
+            ]
+          },
+          "token": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "AppUser": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/SecurityToken"
+            "$ref": "#/components/schemas/IdentityUser"
           },
           {
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "actor": {
+              "firstName": {
                 "type": "string",
                 "nullable": true
               },
-              "audiences": {
-                "type": "array",
-                "nullable": true,
-                "items": {
-                  "type": "string"
-                }
-              },
-              "claims": {
-                "type": "array",
-                "nullable": true,
-                "items": {
-                  "$ref": "#/components/schemas/Claim"
-                }
-              },
-              "encodedHeader": {
+              "lastName": {
                 "type": "string",
                 "nullable": true
-              },
-              "encodedPayload": {
-                "type": "string",
-                "nullable": true
-              },
-              "header": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/JwtHeader"
-                  }
-                ]
-              },
-              "id": {
-                "type": "string",
-                "nullable": true
-              },
-              "issuer": {
-                "type": "string",
-                "nullable": true
-              },
-              "payload": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/JwtPayload"
-                  }
-                ]
-              },
-              "innerToken": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/JwtSecurityToken"
-                  }
-                ]
-              },
-              "rawAuthenticationTag": {
-                "type": "string",
-                "nullable": true
-              },
-              "rawCiphertext": {
-                "type": "string",
-                "nullable": true
-              },
-              "rawData": {
-                "type": "string",
-                "nullable": true
-              },
-              "rawEncryptedKey": {
-                "type": "string",
-                "nullable": true
-              },
-              "rawInitializationVector": {
-                "type": "string",
-                "nullable": true
-              },
-              "rawHeader": {
-                "type": "string",
-                "nullable": true
-              },
-              "rawPayload": {
-                "type": "string",
-                "nullable": true
-              },
-              "rawSignature": {
-                "type": "string",
-                "nullable": true
-              },
-              "securityKey": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/SecurityKey"
-                  }
-                ]
-              },
-              "signatureAlgorithm": {
-                "type": "string",
-                "nullable": true
-              },
-              "signingCredentials": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/SigningCredentials"
-                  }
-                ]
-              },
-              "encryptingCredentials": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/EncryptingCredentials"
-                  }
-                ]
-              },
-              "signingKey": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/SecurityKey"
-                  }
-                ]
-              },
-              "subject": {
-                "type": "string",
-                "nullable": true
-              },
-              "validFrom": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "validTo": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "issuedAt": {
-                "type": "string",
-                "format": "date-time"
               }
             }
           }
         ]
       },
-      "Claim": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "issuer": {
-            "type": "string"
+      "IdentityUser": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/IdentityUserOfString"
           },
-          "originalIssuer": {
-            "type": "string"
-          },
-          "properties": {
+          {
             "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          },
-          "subject": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/ClaimsIdentity"
-              }
-            ]
-          },
-          "type": {
-            "type": "string"
-          },
-          "value": {
-            "type": "string"
-          },
-          "valueType": {
-            "type": "string"
+            "additionalProperties": false
           }
-        }
+        ]
       },
-      "ClaimsIdentity": {
+      "IdentityUserOfString": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "authenticationType": {
+          "id": {
             "type": "string",
             "nullable": true
           },
-          "isAuthenticated": {
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "normalizedUserName": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "normalizedEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "emailConfirmed": {
             "type": "boolean"
           },
-          "actor": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/ClaimsIdentity"
-              }
-            ]
-          },
-          "bootstrapContext": {
-            "nullable": true
-          },
-          "claims": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Claim"
-            }
-          },
-          "label": {
+          "passwordHash": {
             "type": "string",
             "nullable": true
           },
-          "name": {
+          "securityStamp": {
             "type": "string",
             "nullable": true
           },
-          "nameClaimType": {
-            "type": "string"
+          "concurrencyStamp": {
+            "type": "string",
+            "nullable": true
           },
-          "roleClaimType": {
-            "type": "string"
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneNumberConfirmed": {
+            "type": "boolean"
+          },
+          "twoFactorEnabled": {
+            "type": "boolean"
+          },
+          "lockoutEnd": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lockoutEnabled": {
+            "type": "boolean"
+          },
+          "accessFailedCount": {
+            "type": "integer",
+            "format": "int32"
           }
         }
-      },
-      "JwtHeader": {
-        "allOf": [
-          {
-            "type": "object",
-            "additionalProperties": {}
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "Alg": {
-                "type": "string",
-                "nullable": true
-              },
-              "Cty": {
-                "type": "string",
-                "nullable": true
-              },
-              "Enc": {
-                "type": "string",
-                "nullable": true
-              },
-              "EncryptingCredentials": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/EncryptingCredentials"
-                  }
-                ]
-              },
-              "IV": {
-                "type": "string",
-                "nullable": true
-              },
-              "Kid": {
-                "type": "string",
-                "nullable": true
-              },
-              "SigningCredentials": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/SigningCredentials"
-                  }
-                ]
-              },
-              "Typ": {
-                "type": "string",
-                "nullable": true
-              },
-              "X5t": {
-                "type": "string",
-                "nullable": true
-              },
-              "Zip": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        ]
-      },
-      "EncryptingCredentials": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "alg": {
-            "type": "string",
-            "nullable": true
-          },
-          "enc": {
-            "type": "string",
-            "nullable": true
-          },
-          "cryptoProviderFactory": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/CryptoProviderFactory"
-              }
-            ]
-          },
-          "key": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/SecurityKey"
-              }
-            ]
-          }
-        }
-      },
-      "CryptoProviderFactory": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "cryptoProviderCache": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/CryptoProviderCache"
-              }
-            ]
-          },
-          "customCryptoProvider": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/ICryptoProvider"
-              }
-            ]
-          },
-          "cacheSignatureProviders": {
-            "type": "boolean",
-            "default": true
-          }
-        }
-      },
-      "CryptoProviderCache": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false
-      },
-      "ICryptoProvider": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false
-      },
-      "SecurityKey": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false,
-        "properties": {
-          "keyId": {
-            "type": "string",
-            "nullable": true
-          },
-          "cryptoProviderFactory": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/CryptoProviderFactory"
-              }
-            ]
-          }
-        }
-      },
-      "SigningCredentials": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "algorithm": {
-            "type": "string",
-            "nullable": true
-          },
-          "digest": {
-            "type": "string",
-            "nullable": true
-          },
-          "cryptoProviderFactory": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/CryptoProviderFactory"
-              }
-            ]
-          },
-          "key": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/SecurityKey"
-              }
-            ]
-          },
-          "kid": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "JwtPayload": {
-        "allOf": [
-          {
-            "type": "object",
-            "additionalProperties": {}
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "Actort": {
-                "type": "string",
-                "nullable": true
-              },
-              "Acr": {
-                "type": "string",
-                "nullable": true
-              },
-              "Amr": {
-                "type": "array",
-                "nullable": true,
-                "items": {
-                  "type": "string"
-                }
-              },
-              "AuthTime": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              },
-              "Aud": {
-                "type": "array",
-                "nullable": true,
-                "items": {
-                  "type": "string"
-                }
-              },
-              "Azp": {
-                "type": "string",
-                "nullable": true
-              },
-              "CHash": {
-                "type": "string",
-                "nullable": true
-              },
-              "Exp": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              },
-              "Jti": {
-                "type": "string",
-                "nullable": true
-              },
-              "Iat": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              },
-              "Iss": {
-                "type": "string",
-                "nullable": true
-              },
-              "Nbf": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              },
-              "Nonce": {
-                "type": "string",
-                "nullable": true
-              },
-              "Sub": {
-                "type": "string",
-                "nullable": true
-              },
-              "ValidFrom": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "ValidTo": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "IssuedAt": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "Claims": {
-                "type": "array",
-                "nullable": true,
-                "items": {
-                  "$ref": "#/components/schemas/Claim"
-                }
-              }
-            }
-          }
-        ]
-      },
-      "SecurityToken": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false
       },
       "LogInCommand": {
         "type": "object",

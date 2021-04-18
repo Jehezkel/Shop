@@ -10,7 +10,7 @@ namespace Shop.Web.Controllers
     public class AccountController : ApiControllerBase
     {
         [HttpPost]
-        public async Task<ActionResult<JwtSecurityToken>> Login([FromBody] LogInCommand logInCommand)
+        public async Task<ActionResult<LogInResponse>> Login([FromBody] LogInCommand logInCommand)
         {
             return await Mediator.Send(logInCommand);
         }

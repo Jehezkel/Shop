@@ -47,8 +47,11 @@
               >Create Product</a
             >
           </li>
+          <li class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-dark" [routerLink]="['/login']">Login</a>
+          </li>
         </ul>
-        <app-login-menu></app-login-menu>
+        <!-- <app-login-menu></app-login-menu> -->
       </div>
     </div>
   </nav>
