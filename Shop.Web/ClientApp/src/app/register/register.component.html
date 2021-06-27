@@ -1,0 +1,28 @@
+<p>register works!</p>
+<form (ngSubmit)="onSubmit()">
+  <input
+    type="email"
+    name="email"
+    id="email"
+    placeholder="email"
+    class="form-control"
+    [(ngModel)]="registerCommand.email"
+  />
+  <input
+    type="text"
+    name="username"
+    id="username"
+    placeholder="username"
+    class="form-control"
+    [(ngModel)]="registerCommand.userName"
+  />
+  <input
+    type="password"
+    name="password"
+    id="password"
+    placeholder="password"
+    class="form-control"
+    [(ngModel)]="registerCommand.password"
+  />
+  <button class="btn btn-success">Register</button>
+</form>

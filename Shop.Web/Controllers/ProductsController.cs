@@ -7,14 +7,16 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Shop.Web.Controllers
 {
-    // [Authorize]
+    [Authorize]
     public class ProductsController : ApiControllerBase
     {
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<ProductListDTO>> GetProducts()
         {
             return await Mediator.Send(new GetProductsQuery());
         }
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<int>> Create(CreateProductCommand command)
         {

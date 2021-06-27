@@ -17,6 +17,8 @@ import { ProductFormComponent } from "./product-form/product-form.component";
 import { ProductDetailsComponent } from "./product-details/product-details.component";
 import { QuillModule } from "ngx-quill";
 import { LoginComponent } from "./login/login.component";
+import { RegisterComponent } from "./register/register.component";
+import { JwtInterceptor } from "src/helpers/jwt.interceptor";
 
 @NgModule({
   declarations: [
@@ -30,6 +32,7 @@ import { LoginComponent } from "./login/login.component";
     ProductFormComponent,
     ProductDetailsComponent,
     LoginComponent,
+    RegisterComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: "ng-cli-universal" }),
@@ -51,12 +54,13 @@ import { LoginComponent } from "./login/login.component";
         // canActivate: [AuthorizeGuard],
       },
       { path: "login", component: LoginComponent },
+      { path: "register", component: RegisterComponent },
     ]),
     NgbModule,
     QuillModule.forRoot(),
   ],
   providers: [
-    // { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })
