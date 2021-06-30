@@ -12,17 +12,12 @@ using Microsoft.Extensions.Configuration;
 
 namespace Shop.Web.Accounts.Commands
 {
-    public class LogInCommand : IRequest<LogInResponse>
+    public class LogInCommand : IRequest<UserDto>
     {
         public string Email { get; set; }
         public string Password { get; set; }
     }
-    public class LogInResponse
-    {
-        public AppUser User { get; set; }
-        public string Token { get; set; }
-    }
-    public class LogInCommandHandler : IRequestHandler<LogInCommand, LogInResponse>
+    public class LogInCommandHandler : IRequestHandler<LogInCommand, UserDto>
     {
         private AppDbContext _context;
         private readonly UserManager<AppUser> _userManager;
@@ -35,9 +30,9 @@ namespace Shop.Web.Accounts.Commands
             _userManager = userManager;
             _configuration = configuration;
         }
-        public async Task<LogInResponse> Handle(LogInCommand request, CancellationToken cancellation)
+        public async Task<UserDto> Handle(LogInCommand request, CancellationToken cancellation)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.NormalizedEmail == request.Email.ToUpper());
             if (user == null)
             {
                 throw new Exception("Not Registred");
@@ -48,9 +43,9 @@ namespace Shop.Web.Accounts.Commands
                 var acc_service = new AccountsService(_configuration);
                 if (pwdCheckResult == SignInResult.Success)
                 {
-                    return new LogInResponse
+                    return new UserDto
                     {
-                        User = user,
+                        UserName = user.UserName,
                         Token = new JwtSecurityTokenHandler().WriteToken(acc_service.CreateJwtToken(user.Id))
                     };
                 }

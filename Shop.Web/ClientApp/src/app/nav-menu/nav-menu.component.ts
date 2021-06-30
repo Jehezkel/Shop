@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { AppUser, LogInResponse } from "src/services/appweb-api-client";
+import { UserDto } from "src/services/appweb-api-client";
 import { AuthenticationService } from "src/services/authentication.service";
 
 @Component({
@@ -9,12 +9,14 @@ import { AuthenticationService } from "src/services/authentication.service";
 })
 export class NavMenuComponent {
   isExpanded = false;
-  user: LogInResponse;
+  user: UserDto;
   /**
    *
    */
   constructor(public authService: AuthenticationService) {
-    this.user = this.authService.currentUserValue;
+    this.authService.currentUser.subscribe((x) => {
+      this.user = x;
+    });
   }
   collapse() {
     this.isExpanded = false;

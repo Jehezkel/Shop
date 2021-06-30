@@ -1,6 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
+import { error } from "protractor";
 import {
+  AddToBasketCommand,
+  BasketClient,
   ProductDetailsDTO,
   ProductsClient,
 } from "src/services/appweb-api-client";
@@ -16,7 +19,8 @@ export class ProductDetailsComponent implements OnInit {
 
   constructor(
     private _route: ActivatedRoute,
-    private _productsClient: ProductsClient
+    private _productsClient: ProductsClient,
+    private _basketClient: BasketClient
   ) {}
 
   ngOnInit(): void {
@@ -35,5 +39,25 @@ export class ProductDetailsComponent implements OnInit {
 
   setEnlargedImage($event) {
     this._enlargedPath = $event.target.src;
+  }
+  addToBasket() {
+    console.log("xd");
+    var xd = new AddToBasketCommand();
+    xd.productID = this.product.productId;
+    xd.qty = 1;
+    console.log(xd);
+    this._basketClient
+      .addProductToBasket(<AddToBasketCommand>{
+        productID: 7,
+        qty: 1,
+      })
+      .subscribe(
+        (result) => {
+          console.log(result);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
   }
 }

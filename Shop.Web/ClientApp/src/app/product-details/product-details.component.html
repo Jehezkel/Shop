@@ -35,7 +35,9 @@
         <h6 class="card-title align-self-center">
           {{ product.price | number: "0.2" }} zł
         </h6>
-        <a href="" class="btn btn-success round w-75 align-self-center"
+        <a
+          (click)="addToBasket()"
+          class="btn btn-success round w-75 align-self-center"
           >dodaj do koszyka</a
         >
       </div>

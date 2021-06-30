@@ -30,7 +30,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LogInResponse"
+                  "$ref": "#/components/schemas/UserDto"
                 }
               }
             }
@@ -63,6 +63,38 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RegisterResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Basket": {
+      "post": {
+        "tags": [
+          "Basket"
+        ],
+        "operationId": "Basket_AddProductToBasket",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddToBasketCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasketDTO"
                 }
               }
             }
@@ -215,116 +247,17 @@
   },
   "components": {
     "schemas": {
-      "LogInResponse": {
+      "UserDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "user": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/AppUser"
-              }
-            ]
-          },
-          "token": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "AppUser": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/IdentityUser"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "firstName": {
-                "type": "string",
-                "nullable": true
-              },
-              "lastName": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        ]
-      },
-      "IdentityUser": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/IdentityUserOfString"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false
-          }
-        ]
-      },
-      "IdentityUserOfString": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "nullable": true
-          },
           "userName": {
             "type": "string",
             "nullable": true
           },
-          "normalizedUserName": {
+          "token": {
             "type": "string",
             "nullable": true
-          },
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
-          "normalizedEmail": {
-            "type": "string",
-            "nullable": true
-          },
-          "emailConfirmed": {
-            "type": "boolean"
-          },
-          "passwordHash": {
-            "type": "string",
-            "nullable": true
-          },
-          "securityStamp": {
-            "type": "string",
-            "nullable": true
-          },
-          "concurrencyStamp": {
-            "type": "string",
-            "nullable": true
-          },
-          "phoneNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "phoneNumberConfirmed": {
-            "type": "boolean"
-          },
-          "twoFactorEnabled": {
-            "type": "boolean"
-          },
-          "lockoutEnd": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "lockoutEnabled": {
-            "type": "boolean"
-          },
-          "accessFailedCount": {
-            "type": "integer",
-            "format": "int32"
           }
         }
       },
@@ -370,6 +303,81 @@
           "userName": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "BasketDTO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "basketEntries": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/BasketEntry"
+            }
+          },
+          "totalAmount": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "BasketEntry": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "product": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProductDTO"
+              }
+            ]
+          },
+          "qty": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "entryPrice": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "ProductDTO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "productName": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "productImage": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "AddToBasketCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "qty": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -525,28 +533,6 @@
             "items": {
               "$ref": "#/components/schemas/ProductDTO"
             }
-          }
-        }
-      },
-      "ProductDTO": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "productId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "productName": {
-            "type": "string",
-            "nullable": true
-          },
-          "price": {
-            "type": "number",
-            "format": "decimal"
-          },
-          "productImage": {
-            "type": "string",
-            "nullable": true
           }
         }
       },

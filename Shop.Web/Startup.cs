@@ -17,6 +17,7 @@ using MediatR;
 using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Shop.Web.Services;
 
 namespace Shop.Web
 {
@@ -67,6 +68,7 @@ namespace Shop.Web
             });
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services.AddSingleton<CurrentUserService>();
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {

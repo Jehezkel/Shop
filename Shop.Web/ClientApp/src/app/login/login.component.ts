@@ -3,6 +3,7 @@ import { Router } from "@angular/router";
 import { AccountClient, LogInCommand } from "src/services/appweb-api-client";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { AuthenticationService } from "src/services/authentication.service";
+import { first } from "rxjs/operators";
 @Component({
   selector: "app-login",
   templateUrl: "./login.component.html",
@@ -20,7 +21,16 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {}
   onSubmit() {
-    this.authService.login(this.loginCommand);
-    console.log("working");
+    this.authService
+      .login(this.loginCommand)
+      .pipe(first())
+      .subscribe({
+        next: () => {
+          console.log("Przenosiny");
+        },
+        error: (error) => {
+          console.log(error);
+        },
+      });
   }
 }

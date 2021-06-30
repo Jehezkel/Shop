@@ -2,13 +2,12 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { BehaviorSubject, Observable } from "rxjs";
-import { map } from "rxjs/operators";
+import { first, map } from "rxjs/operators";
 import {
   AccountClient,
-  AppUser,
   LogInCommand,
-  LogInResponse,
   RegisterCommand,
+  UserDto,
 } from "./appweb-api-client";
 
 // export enum Role {
@@ -23,38 +22,39 @@ import {
 
 @Injectable({ providedIn: "root" })
 export class AuthenticationService {
-  private currentUserSubject: BehaviorSubject<LogInResponse>;
-  public currentUser: Observable<LogInResponse>;
+  private currentUserSubject: BehaviorSubject<UserDto>;
+  public currentUser: Observable<UserDto>;
+
   constructor(private accountClient: AccountClient, private router: Router) {
-    this.currentUserSubject = new BehaviorSubject<LogInResponse>(
+    this.currentUserSubject = new BehaviorSubject<UserDto>(
       JSON.parse(localStorage.getItem("currentUser"))
     );
     this.currentUser = this.currentUserSubject.asObservable();
   }
-  public get currentUserValue(): LogInResponse {
+
+  public get currentUserValue(): UserDto {
     return this.currentUserSubject.value;
   }
 
   login(loginCommand: LogInCommand) {
-    console.log("jeeee");
-    this.accountClient
-      .login(loginCommand)
-      //map(user=>{
-      //   localStorage.setItem('currentUser', JSON.stringify(user);
-      //   return user;)
-      .subscribe(
-        (response) => {
-          console.log("jestem");
-          console.log(response);
-          localStorage.setItem("currentUser", JSON.stringify(response));
-          this.currentUserSubject.next(response);
-        },
-        (error) => {
-          console.log("jestem na bledzie", error);
-          console.log(error);
-          console.log("status" + error.status);
-        }
-      );
+    console.log("login function");
+
+    return this.accountClient.login(loginCommand).pipe(
+      map((user) => {
+        localStorage.setItem("currentUser", JSON.stringify(user));
+        this.currentUserSubject.next(user);
+        return user;
+      })
+    );
+
+    // .pipe(
+    //   map((user) => {
+    //     localStorage.setItem("currentUser", JSON.stringify(user));
+    //     this.currentUserSubject.next(user);
+    //     console.log(user);
+    //     return user;
+    //   })
+    // );
   }
   register(registerCommand: RegisterCommand) {
     console.log("register function");
