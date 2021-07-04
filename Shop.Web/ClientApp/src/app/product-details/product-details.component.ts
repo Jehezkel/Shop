@@ -46,18 +46,13 @@ export class ProductDetailsComponent implements OnInit {
     xd.productID = this.product.productId;
     xd.qty = 1;
     console.log(xd);
-    this._basketClient
-      .addProductToBasket(<AddToBasketCommand>{
-        productID: 7,
-        qty: 1,
-      })
-      .subscribe(
-        (result) => {
-          console.log(result);
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
+    this._basketClient.addProductToBasket(xd).subscribe(
+      (result) => {
+        console.log(result);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
   }
 }

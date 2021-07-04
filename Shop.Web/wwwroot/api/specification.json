@@ -310,11 +310,11 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "basketEntries": {
+          "basketItems": {
             "type": "array",
             "nullable": true,
             "items": {
-              "$ref": "#/components/schemas/BasketEntry"
+              "$ref": "#/components/schemas/BasketItemDTO"
             }
           },
           "totalAmount": {
@@ -323,7 +323,7 @@
           }
         }
       },
-      "BasketEntry": {
+      "BasketItemDTO": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
