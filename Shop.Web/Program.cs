@@ -14,6 +14,12 @@ namespace Shop.Web
 {
     public class Program
     {
+        private ILogger<Program> _logger;
+
+        public Program(ILogger<Program> logger)
+        {
+            _logger = logger;
+        }
         public async static Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
@@ -28,7 +34,7 @@ namespace Shop.Web
                 }
                 catch (Exception ex)
                 {
-                    //TODO logger
+                    // _logger.LogError("Error occured on main: {ex}", ex);
                 }
             }
             await host.RunAsync();

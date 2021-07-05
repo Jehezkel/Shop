@@ -13,5 +13,10 @@ namespace Shop.Web.Controllers
         {
             return await Mediator.Send(command);
         }
+        [HttpGet]
+        public async Task<ActionResult<BasketDTO>> GetUserBasket()
+        {
+            return await Mediator.Send(new GetBasketQuery());
+        }
     }
 }

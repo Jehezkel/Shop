@@ -7,6 +7,7 @@ import {
   ProductDetailsDTO,
   ProductsClient,
 } from "src/services/appweb-api-client";
+import { BasketService } from "src/services/basket.service";
 
 @Component({
   selector: "app-product-details",
@@ -20,7 +21,7 @@ export class ProductDetailsComponent implements OnInit {
   constructor(
     private _route: ActivatedRoute,
     private _productsClient: ProductsClient,
-    private _basketClient: BasketClient
+    private _basketService: BasketService
   ) {}
 
   ngOnInit(): void {
@@ -41,18 +42,6 @@ export class ProductDetailsComponent implements OnInit {
     this._enlargedPath = $event.target.src;
   }
   addToBasket() {
-    console.log("xd");
-    var xd = new AddToBasketCommand();
-    xd.productID = this.product.productId;
-    xd.qty = 1;
-    console.log(xd);
-    this._basketClient.addProductToBasket(xd).subscribe(
-      (result) => {
-        console.log(result);
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+    this._basketService.addToBasket(this.product.productId, 1);
   }
 }
